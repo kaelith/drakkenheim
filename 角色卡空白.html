@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 5e 人物卡</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .section {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            width: 48%; /* 左右两栏 */
+            box-sizing: border-box;
+        }
+        .section h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .attribute-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .attribute-label {
+            width: 100px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .attribute-input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .attribute-modifier {
+            margin-left: 10px;
+        }
+        .skill-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .skill-label {
+            flex: 1;
+        }
+        .skill-checkbox {
+            margin-right: 5px;
+        }
+        .skill-total {
+            margin-left: 10px;
+        }
+        .proficiency-bonus {
+            margin-bottom: 10px;
+        }
+
+        .long-input {
+            width: 90%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .full-width {
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+             .section {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section full-width">
+            <h2>角色信息</h2>
+            <input type="text" class="long-input" placeholder="角色名称" id="character-name">
+            <input type="text" class="long-input" placeholder="职业" id="character-class">
+            <input type="text" class="long-input" placeholder="种族" id="character-race">
+            <input type="text" class="long-input" placeholder="背景" id="character-background">
+            <input type="text" class="long-input" placeholder="阵营" id="character-alignment">
+            <label for="player-name">玩家名称:</label>
+            <input type="text" class="long-input" id="player-name">
+             <label for="experience">经验值:</label>
+            <input type="number"  class="long-input"  id="experience">
+        </div>
+        <div class="section">
+            <h2>属性</h2>
+            <div class="proficiency-bonus">
+                <label for="proficiency-bonus">熟练加值:</label>
+                <input type="number" id="proficiency-bonus" value="2" class="attribute-input" oninput="updateAllModifiers()">
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">力量:</label>
+                <input type="number" id="strength" class="attribute-input" value="10" oninput="updateModifier('strength')">
+                <span class="attribute-modifier" id="strength-mod"> (+0)</span>
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">敏捷:</label>
+                <input type="number" id="dexterity" class="attribute-input" value="10" oninput="updateModifier('dexterity')">
+                <span class="attribute-modifier" id="dexterity-mod"> (+0)</span>
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">体质:</label>
+                <input type="number" id="constitution" class="attribute-input" value="10" oninput="updateModifier('constitution')">
+                <span class="attribute-modifier" id="constitution-mod"> (+0)</span>
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">智力:</label>
+                <input type="number" id="intelligence" class="attribute-input" value="10" oninput="updateModifier('intelligence')">
+                <span class="attribute-modifier" id="intelligence-mod"> (+0)</span>
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">感知:</label>
+                <input type="number" id="wisdom" class="attribute-input" value="10" oninput="updateModifier('wisdom')">
+                <span class="attribute-modifier" id="wisdom-mod"> (+0)</span>
+            </div>
+            <div class="attribute-row">
+                <label class="attribute-label">魅力:</label>
+                <input type="number" id="charisma" class="attribute-input" value="10" oninput="updateModifier('charisma')">
+                <span class="attribute-modifier" id="charisma-mod"> (+0)</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>技能</h2>
+            <div class="skill-row">
+                <label class="skill-label">运动</label>
+                <input type="checkbox" class="skill-checkbox" id="athletics-prof" onchange="updateSkill('athletics')">
+                <span class="skill-total" id="athletics-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">杂技</label>
+                <input type="checkbox" class="skill-checkbox" id="acrobatics-prof" onchange="updateSkill('acrobatics')">
+                <span class="skill-total" id="acrobatics-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">隐匿</label>
+                <input type="checkbox" class="skill-checkbox" id="stealth-prof" onchange="updateSkill('stealth')">
+                <span class="skill-total" id="stealth-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">奥秘</label>
+                <input type="checkbox" class="skill-checkbox" id="arcana-prof" onchange="updateSkill('arcana')">
+                <span class="skill-total" id="arcana-total"> (+0)</span>
+            </div>
+           <div class="skill-row">
+                <label class="skill-label">历史</label>
+                <input type="checkbox" class="skill-checkbox" id="history-prof" onchange="updateSkill('history')">
+                <span class="skill-total" id="history-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                 <label class="skill-label">调查</label>
+                <input type="checkbox" class="skill-checkbox" id="investigation-prof" onchange="updateSkill('investigation')">
+                <span class="skill-total" id="investigation-total"> (+0)</span>
+            </div>
+             <div class="skill-row">
+                <label class="skill-label">自然</label>
+                <input type="checkbox" class="skill-checkbox" id="nature-prof" onchange="updateSkill('nature')">
+                <span class="skill-total" id="nature-total"> (+0)</span>
+            </div>
+           <div class="skill-row">
+                <label class="skill-label">宗教</label>
+                <input type="checkbox" class="skill-checkbox" id="religion-prof" onchange="updateSkill('religion')">
+                <span class="skill-total" id="religion-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">驯兽</label>
+                <input type="checkbox" class="skill-checkbox" id="animal-handling-prof" onchange="updateSkill('animal-handling')">
+                <span class="skill-total" id="animal-handling-total"> (+0)</span>
+            </div>
+             <div class="skill-row">
+                <label class="skill-label">洞悉</label>
+                <input type="checkbox" class="skill-checkbox" id="insight-prof" onchange="updateSkill('insight')">
+                <span class="skill-total" id="insight-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">医疗</label>
+                <input type="checkbox" class="skill-checkbox" id="medicine-prof" onchange="updateSkill('medicine')">
+                <span class="skill-total" id="medicine-total"> (+0)</span>
+            </div>
+            <div class="skill-row">
+                <label class="skill-label">察觉</label>
+                <input type="checkbox" class="skill-checkbox" id="perception-prof" onchange="updateSkill('perception')">
+                <span class="skill-total" id="perception-total"> (+0)</span>
+            </div>
+             <div class="skill-row">
+                <label class="skill-label">求生</label>
+                <input type="checkbox" class="skill-checkbox" id="survival-prof" onchange="updateSkill('survival')">
+                <span class="skill-total" id="survival-total"> (+0)</span>
+            </div>
+             <div class="skill-row">
+                <label class="skill-label">欺瞒</label>
+                <input type="checkbox" class="skill-checkbox" id="deception-prof" onchange="updateSkill('deception')">
+                <span class="skill-total" id="deception-total"> (+0)</span>
+             </div>
+             <div class="skill-row">
+                <label class="skill-label">威吓</label>
+                <input type="checkbox" class="skill-checkbox" id="intimidation-prof" onchange="updateSkill('intimidation')">
+                <span class="skill-total" id="intimidation-total"> (+0)</span>
+             </div>
+             <div class="skill-row">
+                <label class="skill-label">表演</label>
+                <input type="checkbox" class="skill-checkbox" id="performance-prof" onchange="updateSkill('performance')">
+                <span class="skill-total" id="performance-total"> (+0)</span>
+             </div>
+             <div class="skill-row">
+                <label class="skill-label">说服</label>
+                 <input type="checkbox" class="skill-checkbox" id="persuasion-prof" onchange="updateSkill('persuasion')">
+                 <span class="skill-total" id="persuasion-total"> (+0)</span>
+            </div>
+        </div>
+
+         <div class="section">
+            <h2>生命值</h2>
+             <label for="max-hit-points">最大生命值:</label>
+                <input type="number" id="max-hit-points" class="long-input" value="0">
+            <label for="current-hit-points">当前生命值:</label>
+            <input type="number" id="current-hit-points" class="long-input" value="0">
+            <label for="temporary-hit-points">临时生命值:</label>
+             <input type="number" id="temporary-hit-points" class="long-input" value="0">
+        </div>
+         <div class="section">
+            <h2>防御</h2>
+             <label for="armor-class">护甲等级:</label>
+                <input type="number" id="armor-class" class="long-input" value="10">
+            <label for="initiative">先攻:</label>
+            <input type="number" id="initiative" class="long-input" value="0"  onfocus="this.value=''">
+            <label for="speed">速度:</label>
+            <input type="number" id="speed" class="long-input" value="30">
+        </div>
+         <div class="section">
+              <h2>武器</h2>
+              <textarea class="long-input"  rows="5" placeholder="武器名称, 攻击加值, 伤害类型"></textarea>
+         </div>
+         <div class="section">
+            <h2>其他熟练项</h2>
+              <textarea class="long-input" rows="5"  placeholder="武器, 工具, 语言"></textarea>
+         </div>
+          <div class="section">
+            <h2>装备</h2>
+              <textarea class="long-input" rows="5" placeholder="装备清单"></textarea>
+         </div>
+         <div class="section">
+             <h2>货币</h2>
+             <label for="copper">铜币:</label>
+             <input type="number" id="copper" class="attribute-input" value="0">
+             <label for="silver">银币:</label>
+              <input type="number" id="silver" class="attribute-input" value="0">
+             <label for="gold">金币:</label>
+             <input type="number" id="gold" class="attribute-input" value="0">
+             <label for="platinum">铂金币:</label>
+               <input type="number" id="platinum" class="attribute-input" value="0">
+         </div>
+         <div class="section full-width">
+            <h2>个性</h2>
+             <label for="personality-traits">个性:</label>
+              <textarea class="long-input" rows="3" id="personality-traits" placeholder="个性特征"></textarea>
+             <label for="ideals">理想:</label>
+              <textarea class="long-input" rows="3" id="ideals" placeholder="理想"></textarea>
+              <label for="bonds">羁绊:</label>
+             <textarea class="long-input" rows="3"  id="bonds" placeholder="羁绊"></textarea>
+             <label for="flaws">缺陷:</label>
+              <textarea class="long-input" rows="3" id="flaws" placeholder="缺陷"></textarea>
+        </div>
+        <div class="section full-width">
+            <h2>背景</h2>
+            <textarea class="long-input" rows="5" placeholder="背景故事"></textarea>
+        </div>
+    </div>
+
+    <script>
+        function calculateModifier(score) {
+            return Math.floor((score - 10) / 2);
+        }
+
+        function updateModifier(attribute) {
+            const score = parseInt(document.getElementById(attribute).value);
+            const modifier = calculateModifier(score);
+            document.getElementById(attribute + '-mod').textContent = `(${modifier >= 0 ? '+' : ''}${modifier})`;
+            updateAllSkills();
+        }
+
+        function updateAllModifiers() {
+           const attributes = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            attributes.forEach(attribute => updateModifier(attribute));
+             updateAllSkills();
+        }
+
+       function updateSkill(skill) {
+            const isProficient = document.getElementById(skill + '-prof').checked;
+            const attribute = getSkillAttribute(skill);
+            const attributeMod = parseInt(document.getElementById(attribute + '-mod').textContent.match(/[-+]\d+/)[0]);
+            const proficiencyBonus = parseInt(document.getElementById('proficiency-bonus').value);
+            let total = attributeMod;
+            if (isProficient) {
+                total += proficiencyBonus;
+            }
+            document.getElementById(skill + '-total').textContent = `(${total >= 0 ? '+' : ''}${total})`;
+         }
+
+
+        function updateAllSkills() {
+           const skills = ['athletics', 'acrobatics', 'stealth', 'arcana', 'history', 'investigation','nature','religion',
+              'animal-handling', 'insight', 'medicine', 'perception','survival',
+              'deception', 'intimidation', 'performance', 'persuasion'];
+            skills.forEach(skill => updateSkill(skill));
+        }
+        function getSkillAttribute(skill) {
+            switch (skill) {
+                case 'athletics':
+                    return 'strength';
+                case 'acrobatics':
+                case 'stealth':
+                     return 'dexterity';
+                 case 'arcana':
+                 case 'history':
+                 case 'investigation':
+                 case 'nature':
+                 case 'religion':
+                    return 'intelligence';
+                case 'animal-handling':
+                case 'insight':
+                case 'medicine':
+                case 'perception':
+                case 'survival':
+                    return 'wisdom';
+                case 'deception':
+                case 'intimidation':
+                case 'performance':
+                case 'persuasion':
+                    return 'charisma';
+                default:
+                    return '';
+            }
+        }
+
+        // Initial update when page loads
+       updateAllModifiers();
+    </script>
+</body>
+</html>
